@@ -1,8 +1,10 @@
 package com.wx.mscrpc.client;
 
-import com.wx.mscrpc.common.ServiceDescription;
+
+import com.wx.mscrpc.dto.RpcRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -16,6 +18,7 @@ import java.lang.reflect.Proxy;
  */
 @Data
 @AllArgsConstructor
+@Slf4j
 public class RpcClientProxy implements InvocationHandler {
     private String host;
     private int port;
@@ -32,14 +35,15 @@ public class RpcClientProxy implements InvocationHandler {
      */
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        ServiceDescription sdp = ServiceDescription.builder()
+        log.info("Call invoke method and invoked method: {}", method.getName());
+        RpcRequest rpcRequest = RpcRequest.builder()
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
                 .parameters(args)
                 .paramTypes(method.getParameterTypes()).build();
 
-        RpcClient client = new RpcClient();
-        return client.sendRpcRequest(sdp, host, port);
+        RpcClient rpcClient = new RpcClient();
+        return rpcClient.sendRpcRequest(rpcRequest, host, port);
     }
 
     /**
@@ -50,7 +54,7 @@ public class RpcClientProxy implements InvocationHandler {
      * @Date 2022/3/29 22:45
      */
     public <T>T getProxy(Class<T> clazz){
-        return (T)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, RpcClientProxy.this);
+        return (T)Proxy.newProxyInstance(clazz.getClassLoader(), new Class[]{clazz}, this);
     }
 
 

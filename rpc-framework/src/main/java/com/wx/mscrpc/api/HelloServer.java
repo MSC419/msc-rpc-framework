@@ -7,5 +7,5 @@ package com.wx.mscrpc.api;
  * @Version 1.0
  */
 public interface HelloServer {
-    public void sayHello(String name);
+    String sayHello(String name);
 }

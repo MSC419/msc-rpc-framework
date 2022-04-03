@@ -1,5 +1,7 @@
 package com.wx.mscrpc.server;
 
+import com.wx.mscrpc.enumeration.RpcErrorMessageEnum;
+import com.wx.mscrpc.exception.RpcException;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ public class RpcServer {
     }
     /**
      * @Description 注册服务
+     * TODO 1.用Map来存储注册的服务信息 2.修改为扫描注解注册
      * @param service 要注册的服务对象
      * @param port 该服务对应的端口
      * @Return 无
@@ -40,15 +43,20 @@ public class RpcServer {
      * @Date 2022/3/29 21:46
      */
     public void register(Object service, int port){
+        //对service做空判断
+        if(service == null){
+            throw new RpcException(RpcErrorMessageEnum.SERVICE_CAN_NOT_BE_NULL);
+        }
         try(ServerSocket serverSocket = new ServerSocket(port)) {
             log.info("server starts...");
             Socket socket;
             while((socket=serverSocket.accept())!=null){
                 log.info("client connected");
-                threadPool.execute(new WorkerThread(socket, service));
+                threadPool.execute(new ClientMessageHandlerThread(socket, service));
             }
         } catch (IOException e) {
-            log.error(e.getMessage(),e);
+            log.error("occur IOException:", e);
         }
     }
+
 }
