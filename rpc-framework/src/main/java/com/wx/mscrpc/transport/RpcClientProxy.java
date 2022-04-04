@@ -1,8 +1,7 @@
-package com.wx.mscrpc.remoting.socket;
+package com.wx.mscrpc.transport;
 
 
 import com.wx.mscrpc.dto.RpcRequest;
-import com.wx.mscrpc.remoting.socket.RpcClient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,7 @@ import java.lang.reflect.Proxy;
 @AllArgsConstructor
 @Slf4j
 public class RpcClientProxy implements InvocationHandler {
-    private String host;
-    private int port;
+    private RpcClient rpcClient;
 
 
     /**
@@ -43,8 +41,7 @@ public class RpcClientProxy implements InvocationHandler {
                 .parameters(args)
                 .paramTypes(method.getParameterTypes()).build();
 
-        RpcClient rpcClient = new RpcClient();
-        return rpcClient.sendRpcRequest(rpcRequest, host, port);
+        return rpcClient.sendRpcRequest(rpcRequest);
     }
 
     /**

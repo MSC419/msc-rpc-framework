@@ -1,4 +1,4 @@
-package com.wx.mscrpc.remoting;
+package com.wx.mscrpc.transport;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;

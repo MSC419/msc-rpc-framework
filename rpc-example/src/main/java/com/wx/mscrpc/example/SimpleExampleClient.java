@@ -1,7 +1,9 @@
 package com.wx.mscrpc.example;
 
 import com.wx.mscrpc.api.HelloService;
-import com.wx.mscrpc.remoting.socket.RpcClientProxy;
+import com.wx.mscrpc.transport.RpcClient;
+import com.wx.mscrpc.transport.RpcClientProxy;
+import com.wx.mscrpc.transport.socket.SocketRpcClient;
 
 /**
  * @Description
@@ -11,7 +13,8 @@ import com.wx.mscrpc.remoting.socket.RpcClientProxy;
  */
 public class SimpleExampleClient {
     public static void main(String[] args) {
-        RpcClientProxy clientProxy = new RpcClientProxy("127.0.0.1",1234);
+        RpcClient rpcClient = new SocketRpcClient("127.0.0.1",1234);
+        RpcClientProxy clientProxy = new RpcClientProxy(rpcClient);
         HelloService helloService = clientProxy.getProxy(HelloService.class);
         String hello = helloService.sayHello("Uam");
         System.out.println(hello);

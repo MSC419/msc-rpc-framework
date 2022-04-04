@@ -9,6 +9,6 @@ package com.wx.mscrpc.registry;
 public interface ServiceRegistry {
     <T> void register(T server);
 
-    Object getServer(String serverName);
+    Object getService(String serverName);
 
 }

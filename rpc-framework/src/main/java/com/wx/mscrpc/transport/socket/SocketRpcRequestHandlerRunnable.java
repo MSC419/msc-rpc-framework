@@ -1,10 +1,9 @@
-package com.wx.mscrpc.remoting.socket;
+package com.wx.mscrpc.transport.socket;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
-import com.wx.mscrpc.enumeration.RpcResponseCode;
 import com.wx.mscrpc.registry.ServiceRegistry;
-import com.wx.mscrpc.remoting.RpcRequestHandler;
+import com.wx.mscrpc.transport.RpcRequestHandler;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -12,8 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.Socket;
 
 /**
@@ -25,7 +22,7 @@ import java.net.Socket;
 @Data
 @AllArgsConstructor
 @Slf4j
-public class RpcRequestHandlerRunnable implements Runnable{
+public class SocketRpcRequestHandlerRunnable implements Runnable{
     private Socket socket;
     private RpcRequestHandler rpcRequestHandler;
     private ServiceRegistry serviceRegistry;
@@ -37,7 +34,7 @@ public class RpcRequestHandlerRunnable implements Runnable{
              ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream())) {
             RpcRequest rpcRequest = (RpcRequest) objectInputStream.readObject();
             String interfaceName = rpcRequest.getInterfaceName();
-            Object service = serviceRegistry.getServer(interfaceName);
+            Object service = serviceRegistry.getService(interfaceName);
             Object result = rpcRequestHandler.handle(rpcRequest,service);
             objectOutputStream.writeObject(RpcResponse.success(result));
             objectOutputStream.flush();

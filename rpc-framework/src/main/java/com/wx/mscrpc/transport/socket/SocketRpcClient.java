@@ -1,4 +1,4 @@
-package com.wx.mscrpc.remoting.socket;
+package com.wx.mscrpc.transport.socket;
 
 
 import com.wx.mscrpc.dto.RpcRequest;
@@ -6,6 +6,9 @@ import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.RpcErrorMessageEnum;
 import com.wx.mscrpc.enumeration.RpcResponseCode;
 import com.wx.mscrpc.exception.RpcException;
+import com.wx.mscrpc.transport.RpcClient;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -20,18 +23,22 @@ import java.net.Socket;
  * @Version 1.0
  */
 @Slf4j
-public class RpcClient {
+@Data
+@AllArgsConstructor
+public class SocketRpcClient implements RpcClient {
+
+    private String host;
+    private int port;
+
     /**
      * @Description 发送请求服务的请求
      * @param rpcRequest  请求描述
-     * @param host  对方IP地址
-     * @param port  端口号
      * @Return 这个返回值暂时不知道有什么用
      * @Author MSC419
      * @Date 2022/3/29 21:39
      */
-
-    public Object sendRpcRequest(RpcRequest rpcRequest, String host, int port){
+    @Override
+    public Object sendRpcRequest(RpcRequest rpcRequest){
 
         try(Socket socket = new Socket(host, port)){
 

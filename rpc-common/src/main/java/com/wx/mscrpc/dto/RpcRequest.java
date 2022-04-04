@@ -1,7 +1,6 @@
 package com.wx.mscrpc.dto;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -13,8 +12,11 @@ import java.io.Serializable;
  * @Date 2022/3/29 21:22
  * @Version 1.1
  */
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 @Builder
+@ToString
 public class RpcRequest implements Serializable {
 
     private static final long serialVersionUID = 4457347321815052832L;

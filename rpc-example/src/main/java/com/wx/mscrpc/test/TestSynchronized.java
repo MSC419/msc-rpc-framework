@@ -1,4 +1,4 @@
-package com.wx.mscrpc.example;
+package com.wx.mscrpc.test;
 
 /**
  * @Description 测试代码
@@ -6,7 +6,7 @@ package com.wx.mscrpc.example;
  * @Date 2022/4/3 16:26
  * @Version 1.0
  */
-public class Tests {
+public class TestSynchronized {
     public static void main(String[] args) {
 //        System.out.println("使用关键字synchronized");
         System.out.println("不使用关键字synchronized");

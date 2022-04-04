@@ -2,7 +2,7 @@ package com.wx.mscrpc.example;
 
 import com.wx.mscrpc.api.HelloService;
 import com.wx.mscrpc.registry.DefaultServiceRegistry;
-import com.wx.mscrpc.remoting.socket.RpcServer;
+import com.wx.mscrpc.transport.socket.SocketRpcServer;
 
 /**
  * @Description
@@ -15,7 +15,7 @@ public class SimpleExampleServer {
         HelloService helloService = new HelloServiceImpl();
         DefaultServiceRegistry defaultServiceRegistry = new DefaultServiceRegistry();
         defaultServiceRegistry.register(helloService);
-        RpcServer rpcServer = new RpcServer(defaultServiceRegistry);
-        rpcServer.start(1234);
+        SocketRpcServer socketRpcServer = new SocketRpcServer(defaultServiceRegistry);
+        socketRpcServer.start(1234);
     }
 }

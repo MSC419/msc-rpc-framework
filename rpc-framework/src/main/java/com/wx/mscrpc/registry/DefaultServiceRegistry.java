@@ -23,8 +23,8 @@ public class DefaultServiceRegistry implements ServiceRegistry{
      * key:service/interface name
      * value:service
      */
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
-    private final Set<String> registeredService = ConcurrentHashMap.newKeySet();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     /**
      * @Description 注册服务
@@ -53,7 +53,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     }
 
     @Override
-    public Object getServer(String serviceName) {
+    public Object getService(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if(null == service){
             throw new RpcException(RpcErrorMessageEnum.SERVICE_CAN_NOT_BE_FOUND);
