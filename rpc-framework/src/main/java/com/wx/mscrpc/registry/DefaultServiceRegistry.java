@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * @Description 注册服务接口实现类
+ * @Description 默认的服务注册中心实现，通过 Map 保存服务信息，可以通过 zookeeper 来改进
  * @Author MSC419
  * @Date 2022/4/3 19:04
  * @Version 1.2
@@ -35,7 +35,8 @@ public class DefaultServiceRegistry implements ServiceRegistry{
      * @Date 2022/4/3 19:23
      */
     @Override
-    public <T> void register(T service) {
+    public synchronized <T> void register(T service) {
+        //这一句话的意思就是：service的包含路径的类名，即：github.javaguide.HelloServiceImpl
         String serviceName = service.getClass().getCanonicalName();
         if(registeredService.contains(serviceName)){
             return;
@@ -53,7 +54,7 @@ public class DefaultServiceRegistry implements ServiceRegistry{
     }
 
     @Override
-    public Object getService(String serviceName) {
+    public synchronized Object getService(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if(null == service){
             throw new RpcException(RpcErrorMessageEnum.SERVICE_CAN_NOT_BE_FOUND);

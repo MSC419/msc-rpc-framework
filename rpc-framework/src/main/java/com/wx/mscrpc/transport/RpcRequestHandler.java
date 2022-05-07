@@ -3,6 +3,8 @@ package com.wx.mscrpc.transport;
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.RpcResponseCode;
+import com.wx.mscrpc.registry.DefaultServiceRegistry;
+import com.wx.mscrpc.registry.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 
 import java.lang.reflect.InvocationTargetException;
@@ -16,13 +18,20 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class RpcRequestHandler {
-    public Object handle(RpcRequest rpcRequest, Object service) {
+    private static final ServiceRegistry serviceRegistry;
+    //TODO 这里为什么要用static修饰？
+    static {
+        serviceRegistry = new DefaultServiceRegistry();
+    }
+    public Object handle(RpcRequest rpcRequest) {
+        //通过注册中心获取目标类
+        Object service = serviceRegistry.getService(rpcRequest.getInterfaceName());
         Object result = null;
         try {
             result = invokeTargetMethod(rpcRequest, service);
             log.info("service:{} successful invoke method:{}", rpcRequest.getInterfaceName(), rpcRequest.getMethodName());
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            log.error("occur exception", e);
+            log.error("RpcRequestHandler occur exception", e);
         }
         return result;
     }

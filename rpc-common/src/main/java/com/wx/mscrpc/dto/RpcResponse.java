@@ -22,14 +22,17 @@ import java.io.Serializable;
 public class RpcResponse<T> implements Serializable {
     private static final long serialVersionUID = 1940650262445635825L;
 
+    private String requestId;
     private Integer code;//响应码
     private String message;//响应消息
     private T data;//响应数据
 
-    public static <T> RpcResponse<T> success(T data) {
+    public static <T> RpcResponse<T> success(T data, String requestId) {
         RpcResponse<T> response = new RpcResponse<>();
         response.setCode(RpcResponseCode.SUCCESS.getCode());
-        if(data != null){
+        response.setMessage(RpcResponseCode.SUCCESS.getMessage());
+        response.setRequestId(requestId);
+        if(null != data){
             response.setData(data);
         }
         return response;

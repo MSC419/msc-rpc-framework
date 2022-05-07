@@ -1,7 +1,7 @@
 package com.wx.mscrpc.serializer;
 
 /**
- * @Description 序列化与反序列化的接口类
+ * @Description 序列化接口，所有序列化类都要实现这个接口
  * @Author MSC419
  * @Date 2022/4/4 17:17
  * @Version 2.0
@@ -19,7 +19,7 @@ public interface Serializer {
     /**
      * @Description 反序列化
      * @param bytes 字节数据
-     * @param clazz 类
+     * @param clazz 目标类
      * @Return 反序列化后的对象
      * @Author MSC419
      * @Date 2022/4/4 17:22

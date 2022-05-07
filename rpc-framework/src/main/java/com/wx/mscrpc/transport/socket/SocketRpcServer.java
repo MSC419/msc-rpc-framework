@@ -2,6 +2,7 @@ package com.wx.mscrpc.transport.socket;
 
 import com.wx.mscrpc.registry.ServiceRegistry;
 import com.wx.mscrpc.transport.RpcRequestHandler;
+import com.wx.mscrpc.utils.concurrent.ThreadPoolFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -17,21 +18,11 @@ import java.util.concurrent.*;
  */
 @Slf4j
 public class SocketRpcServer {
-    //线程池参数
-    private static final int CORE_POOL_SIZE = 10;//保留在线程池中的核心线程数（即使他们是空闲的）
-    private static final int MAXIMUM_POOL_SIZE_SIZE = 100;//池中允许的最大线程数
-    private static final int KEEP_ALIVE_TIME = 1;//当线程数大于核心时，多余的空闲线程在终止前等待新任务的最长时间。
-    private static final int BLOCKING_QUEUE_CAPACITY = 100;
 
-    private ExecutorService threadPool;
-    private RpcRequestHandler rpcRequestHandler = new RpcRequestHandler();
-    private final ServiceRegistry serviceRegistry;
+    private final ExecutorService threadPool;
 
     public SocketRpcServer(ServiceRegistry serviceRegistry) {
-        this.serviceRegistry = serviceRegistry;
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
-        ThreadFactory threadFactory = Executors.defaultThreadFactory();
-        this.threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE_SIZE, KEEP_ALIVE_TIME, TimeUnit.MINUTES, workQueue, threadFactory);
+        threadPool = ThreadPoolFactory.createDefaultThreadPool("socket-server-rpc-pool");
     }
 
     /**
@@ -48,7 +39,7 @@ public class SocketRpcServer {
             Socket socket;
             while((socket=serverSocket.accept())!=null){
                 log.info("client connected");
-                threadPool.execute(new SocketRpcRequestHandlerRunnable(socket, rpcRequestHandler, serviceRegistry));
+                threadPool.execute(new SocketRpcRequestHandlerRunnable(socket));
             }
             threadPool.shutdown();//关闭线程池
         } catch (IOException e) {

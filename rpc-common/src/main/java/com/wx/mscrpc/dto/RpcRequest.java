@@ -20,6 +20,7 @@ import java.io.Serializable;
 public class RpcRequest implements Serializable {
 
     private static final long serialVersionUID = 4457347321815052832L;
+    private String requestId;
     private String interfaceName;
     private String methodName;
     private Object[] parameters;
