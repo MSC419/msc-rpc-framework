@@ -14,11 +14,13 @@ import java.net.InetSocketAddress;
  * @Date 2022/4/4 17:05
  * @Version 2.0
  */
-public class NettyClient {
+public class NettyClientMain {
     public static void main(String[] args) {
-        ClientTransport clientTransport =new NettyClientClientTransport(new InetSocketAddress("127.0.0.1", 1234));
+        ClientTransport clientTransport =new NettyClientClientTransport();
         RpcClientProxy rpcClientProxy = new RpcClientProxy(clientTransport);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
+        //HelloService.class：com.wx.mscrpc.example.api.HelloService
+//        System.out.println(HelloService.class);
         String hello = helloService.hello(new Hello("uam","111"));
 //        System.out.println(hello);
         assert "Hello description is 111".equals(hello);

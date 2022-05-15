@@ -2,6 +2,10 @@ package com.wx.mscrpc.transport.netty.server;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
+import com.wx.mscrpc.provider.ServiceProvider;
+import com.wx.mscrpc.provider.ServiceProviderImpl;
+import com.wx.mscrpc.registry.ServiceRegistry;
+import com.wx.mscrpc.registry.ZkServiceRegistry;
 import com.wx.mscrpc.serializer.kryo.KryoSerializer;
 import com.wx.mscrpc.transport.netty.codec.NettyKryoDecoder;
 import com.wx.mscrpc.transport.netty.codec.NettyKryoEncoder;
@@ -15,6 +19,8 @@ import io.netty.handler.logging.LoggingHandler;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
+import java.net.InetSocketAddress;
+
 /**
  * @Description 利用Netty做网络传输的服务端
  * @Author MSC419
@@ -24,16 +30,41 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 public class NettyServer {
-    private int port;
-    // TODO 这里为什么要用final修饰？
+    private final String host;
+    private final int port;
     private final KryoSerializer kryoSerializer;
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
 
-    public NettyServer(int port) {
-        this.port = port;
-        kryoSerializer = new KryoSerializer();
-    }
+    public NettyServer(String host, int port) {
+            this.host = host;
+            this.port = port;
+            kryoSerializer = new KryoSerializer();
+            serviceRegistry = new ZkServiceRegistry();
+            serviceProvider = new ServiceProviderImpl();
+        }
 
-    public void run(){
+        /**
+         * @Description         注册服务并启动Netty服务端
+         * @param service       服务
+         * @param serviceClass  服务类型
+         * @Return
+         * @Author MSC419
+         * @Date 2022/5/15 18:59
+         */
+        public <T> void publishService(Object service, Class<T> serviceClass) {
+            serviceProvider.addServiceProvider(service);
+            //注册服务
+            serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+            start();
+        }
+
+        /**
+         * @Description     启动Netty服务端
+         * @Author MSC419
+         * @Date 2022/5/15 18:58
+         */
+        public void start(){
         //创建两个线程组 boosGroup、workerGroup
         //Boss线程专门用于接收来自客户端的连接。一般只开启一条线程，除非一个Nett有服务同时监听多个窗口
         EventLoopGroup bossGroup = new NioEventLoopGroup();
@@ -67,7 +98,7 @@ public class NettyServer {
                     .option(ChannelOption.SO_KEEPALIVE, true);
 
             //绑定端口号，启动服务端
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(host,port).sync();
             //阻塞主线程，直到Socket通达被关闭
             channelFuture.channel().closeFuture().sync();
         } catch (InterruptedException e) {

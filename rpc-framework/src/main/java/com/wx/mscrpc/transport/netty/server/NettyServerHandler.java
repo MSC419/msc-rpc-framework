@@ -2,7 +2,7 @@ package com.wx.mscrpc.transport.netty.server;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
-import com.wx.mscrpc.transport.RpcRequestHandler;
+import com.wx.mscrpc.handler.RpcRequestHandler;
 import com.wx.mscrpc.utils.concurrent.ThreadPoolFactory;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;

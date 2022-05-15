@@ -2,12 +2,13 @@ package com.wx.mscrpc.transport.netty.client;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
+import com.wx.mscrpc.registry.ServiceRegistry;
+import com.wx.mscrpc.registry.ZkServiceRegistry;
 import com.wx.mscrpc.transport.ClientTransport;
 import com.wx.mscrpc.utils.checker.RpcMessageChecker;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.util.AttributeKey;
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.InetSocketAddress;
@@ -20,16 +21,22 @@ import java.util.concurrent.atomic.AtomicReference;
  * @Version 1.0
  */
 @Slf4j
-@AllArgsConstructor
 public class NettyClientClientTransport implements ClientTransport {
 
-    private InetSocketAddress inetSocketAddress;
+    private ServiceRegistry serviceRegistry;
+    public NettyClientClientTransport() {
+        this.serviceRegistry = new ZkServiceRegistry();
+    }
 
     @Override
     public Object sendRpcRequest(RpcRequest rpcRequest) {
         AtomicReference<Object> result = new AtomicReference<>(null);
         try {
+            //从注册中心取到服务地址
+            InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+            //监听该服务地址
             Channel channel = ChannelProvider.get(inetSocketAddress);
+            //将rpcRequest发送给该服务地址，并得到该地址返回的rpcResponse，将rpcResponse返回
             if (channel.isActive()) {
                 channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {

@@ -41,6 +41,7 @@ public class RpcClientProxy implements InvocationHandler {
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         log.info("Call invoke method and invoked method: {}", method.getName());
+        //创建RpcRequest
         RpcRequest rpcRequest = RpcRequest.builder()
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
@@ -48,7 +49,7 @@ public class RpcClientProxy implements InvocationHandler {
                 .paramTypes(method.getParameterTypes())
                 .requestId(UUID.randomUUID().toString())
                 .build();
-
+        //发送RpcRequest并得到返回值
         return clientTransport.sendRpcRequest(rpcRequest);
     }
 

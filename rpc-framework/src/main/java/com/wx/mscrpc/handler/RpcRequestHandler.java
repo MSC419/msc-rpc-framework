@@ -1,9 +1,10 @@
-package com.wx.mscrpc.transport;
+package com.wx.mscrpc.handler;
 
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.RpcResponseCode;
-import com.wx.mscrpc.registry.DefaultServiceRegistry;
+import com.wx.mscrpc.provider.ServiceProvider;
+import com.wx.mscrpc.provider.ServiceProviderImpl;
 import com.wx.mscrpc.registry.ServiceRegistry;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,21 +12,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * @Description
+ * @Description         执行调用客户端请求中的方法
  * @Author MSC419
  * @Date 2022/4/3 19:31
  * @Version 1.2
  */
 @Slf4j
 public class RpcRequestHandler {
-    private static final ServiceRegistry serviceRegistry;
+    private static final ServiceProvider SERVICE_PROVIDER;
     //TODO 这里为什么要用static修饰？
     static {
-        serviceRegistry = new DefaultServiceRegistry();
+        SERVICE_PROVIDER = new ServiceProviderImpl();
     }
     public Object handle(RpcRequest rpcRequest) {
         //通过注册中心获取目标类
-        Object service = serviceRegistry.getService(rpcRequest.getInterfaceName());
+        Object service = SERVICE_PROVIDER.getServiceProvider(rpcRequest.getInterfaceName());
         Object result = null;
         try {
             result = invokeTargetMethod(rpcRequest, service);
