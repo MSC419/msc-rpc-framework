@@ -26,14 +26,14 @@ public interface Serializer {
      */
     <T> T deserialize(byte[] bytes, Class<T> clazz);
 
-    static Serializer getByCode(int code) {
+    static Serializer getByCode(byte code) {
         switch (code) {
             case 0:
                 return new KryoSerializer();
-//            case 1:
-//                return new JsonSerializer();
-//            case 2:
-//                return new HessianSerializer();
+            case 1:
+                return new JsonSerializer();
+            case 2:
+                return new HessianSerializer();
             default:
                 return null;
         }
