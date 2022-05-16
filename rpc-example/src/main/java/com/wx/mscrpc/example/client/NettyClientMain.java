@@ -4,6 +4,7 @@ import com.wx.mscrpc.api.Hello;
 import com.wx.mscrpc.api.HelloService;
 import com.wx.mscrpc.api.User;
 import com.wx.mscrpc.api.UserService;
+import com.wx.mscrpc.loadbalancer.RandomLoadBalance;
 import com.wx.mscrpc.transport.ClientTransport;
 import com.wx.mscrpc.proxy.RpcClientProxy;
 import com.wx.mscrpc.transport.netty.client.NettyClientClientTransport;
@@ -16,7 +17,7 @@ import com.wx.mscrpc.transport.netty.client.NettyClientClientTransport;
  */
 public class NettyClientMain {
     public static void main(String[] args) {
-        ClientTransport clientTransport =new NettyClientClientTransport();
+        ClientTransport clientTransport =new NettyClientClientTransport(new RandomLoadBalance());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(clientTransport);
 
         //调用服务1

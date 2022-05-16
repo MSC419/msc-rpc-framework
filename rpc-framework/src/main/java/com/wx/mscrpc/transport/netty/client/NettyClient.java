@@ -1,8 +1,6 @@
 package com.wx.mscrpc.transport.netty.client;
 
-import com.wx.mscrpc.dto.RpcRequest;
-import com.wx.mscrpc.dto.RpcResponse;
-import com.wx.mscrpc.serializer.kryo.KryoSerializer;
+import com.wx.mscrpc.serializer.KryoSerializer;
 import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
 import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
 import com.wx.mscrpc.transport.netty.codec.Spliter;

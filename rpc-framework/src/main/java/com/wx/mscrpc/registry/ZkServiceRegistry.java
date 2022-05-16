@@ -1,10 +1,13 @@
 package com.wx.mscrpc.registry;
 
+import com.wx.mscrpc.loadbalancer.LoadBalancer;
+import com.wx.mscrpc.loadbalancer.RandomLoadBalance;
 import com.wx.mscrpc.utils.zookeeper.CuratorHelper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.curator.framework.CuratorFramework;
 
 import java.net.InetSocketAddress;
+import java.util.List;
 
 /**
  * @Description 基于zookeeper实现注册中心
@@ -15,10 +18,26 @@ import java.net.InetSocketAddress;
 @Slf4j
 public class ZkServiceRegistry implements ServiceRegistry{
     private final CuratorFramework zkClient;
+    private final LoadBalancer loadBalancer;
+
     public ZkServiceRegistry() {
         zkClient = CuratorHelper.getZkClient();//新建zookeeper客户端
         zkClient.start();//zookeeper客户端与zookeeper服务器建立连接
+        loadBalancer = new RandomLoadBalance();
     }
+
+    public ZkServiceRegistry(LoadBalancer loadBalancer) {
+        zkClient = CuratorHelper.getZkClient();
+        zkClient.start();
+
+        if(loadBalancer == null) {
+            this.loadBalancer = new RandomLoadBalance();
+        } else {
+            this.loadBalancer = loadBalancer;
+        }
+    }
+
+
     @Override
     public void registerService(String serviceName, InetSocketAddress inetSocketAddress) {
         //  /my-rpc/{serviceName}/{host}:{port}
@@ -35,10 +54,16 @@ public class ZkServiceRegistry implements ServiceRegistry{
 
     @Override
     public InetSocketAddress lookupService(String serviceName) {
-        String serviceAddress = CuratorHelper.getChildrenNodes(zkClient, serviceName).get(0);
-        log.info("成功找到服务地址:{}", serviceAddress);
-        //InetSocketAddress( host , port )
-        return new InetSocketAddress(serviceAddress.split(":")[0], Integer.parseInt(serviceAddress.split(":")[1]));
+        try {
+            List<String> serviceAddress = CuratorHelper.getChildrenNodes(zkClient, serviceName);
+            // 负载均衡
+            String address = loadBalancer.balance(serviceAddress);
+            log.info("根据负载均衡策略后, 返回的服务器ip地址为:" + address);
+            return new InetSocketAddress(address.split(":")[0], Integer.parseInt(address.split(":")[1]));
+        } catch (Exception e) {
+            log.error("获取服务时有错误发生:", e);
+        }
+        return null;
     }
 
 }

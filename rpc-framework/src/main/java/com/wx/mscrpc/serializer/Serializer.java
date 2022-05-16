@@ -1,7 +1,5 @@
 package com.wx.mscrpc.serializer;
 
-import com.wx.mscrpc.serializer.kryo.KryoSerializer;
-
 /**
  * @Description 序列化接口，所有序列化类都要实现这个接口
  * @Author MSC419
