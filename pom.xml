@@ -12,6 +12,7 @@
         <module>rpc-example</module>
         <module>rpc-framework</module>
         <module>rpc-common</module>
+        <module>rpc-api</module>
     </modules>
 
     <properties>

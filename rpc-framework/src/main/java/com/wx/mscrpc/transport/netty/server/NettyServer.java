@@ -56,7 +56,7 @@ public class NettyServer {
             serviceProvider.addServiceProvider(service);
             //注册服务
             serviceRegistry.registerService(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
-            start();
+
         }
 
         /**

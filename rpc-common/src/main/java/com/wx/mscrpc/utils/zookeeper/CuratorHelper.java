@@ -33,7 +33,7 @@ public class CuratorHelper {
 
     //客户端本地缓存
     //TODO 为什么这就算客户端本地缓存了？
-    //key：服务名称serviceName，value：String类型的host:port，这里用List可能是为了以后多个主机提供同一个服务做扩展
+    //key：服务名称serviceName，value：String类型的host:port，这里用List是为了以后多个主机提供同一个服务做扩展
     private static final Map<String, List<String>> SERVICE_ADDRESS_MAP = new ConcurrentHashMap<>();
     private static final Set<String> PERSISTENT_REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
     private static final Set<String> EPHEMERAL_REGISTERED_PATH_SET = ConcurrentHashMap.newKeySet();
@@ -67,8 +67,6 @@ public class CuratorHelper {
      * @Description 根据节点路径创建临时节点 临时节点存储在zookeeper中，当断开连接时被删除
      * @param zkClient  与zookeeper服务器连接的zookeeper客户端
      * @param path      节点路径
-     * @Author MSC419
-     * @Date 2022/5/8 11:09
      */
     public static void createEphemeralNode(final CuratorFramework zkClient, final String path) {
         try {
@@ -109,13 +107,13 @@ public class CuratorHelper {
      * @Description         根据服务名获取节点中的内容
      * @param zkClient      与zookeeper服务器连接的zookeeper客户端
      * @param serviceName   服务名称
-     * @return TODO 我不明白这里为啥要返回List<String>，是为了以后多个主机提供同一个服务做扩展？
+     * @return
      */
     public static List<String> getChildrenNodes(final CuratorFramework zkClient, final String serviceName) {
         if (SERVICE_ADDRESS_MAP.containsKey(serviceName)) {
             return SERVICE_ADDRESS_MAP.get(serviceName);
         }
-        List<String> result = Collections.emptyList();//返回了一个空的List
+        List<String> result = Collections.emptyList();
         String servicePath = CuratorHelper.ZK_REGISTER_ROOT_PATH + "/" + serviceName;
         try {
             result = zkClient.getChildren().forPath(servicePath);

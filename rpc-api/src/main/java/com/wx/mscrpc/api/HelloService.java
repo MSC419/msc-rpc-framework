@@ -1,4 +1,4 @@
-package com.wx.mscrpc.example.api;
+package com.wx.mscrpc.api;
 
 /**
  * @Description

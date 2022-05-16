@@ -8,8 +8,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="rpc-example" />
-        <module name="rpc-framework" />
         <module name="rpc-common" />
+        <module name="rpc-api" />
+        <module name="rpc-framework" />
       </profile>
     </annotationProcessing>
   </component>

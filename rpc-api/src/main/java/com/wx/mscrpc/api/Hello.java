@@ -1,4 +1,4 @@
-package com.wx.mscrpc.example.api;
+package com.wx.mscrpc.api;
 
 import lombok.*;
 
@@ -17,6 +17,6 @@ import java.io.Serializable;
 @Builder
 @ToString
 public class Hello implements Serializable {
+    private String name;
     private String message;
-    private String description;
 }

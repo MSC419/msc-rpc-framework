@@ -1,7 +1,7 @@
 //package com.wx.mscrpc.example.client;
 //
-//import com.wx.mscrpc.example.api.Hello;
-//import com.wx.mscrpc.example.api.HelloService;
+//import com.wx.mscrpc.api.Hello;
+//import com.wx.mscrpc.api.HelloService;
 //import com.wx.mscrpc.transport.ClientTransport;
 //import com.wx.mscrpc.proxy.RpcClientProxy;
 //import com.wx.mscrpc.transport.socket.SocketRpcClient;

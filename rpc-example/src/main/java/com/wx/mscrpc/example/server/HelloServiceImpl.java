@@ -1,7 +1,8 @@
 package com.wx.mscrpc.example.server;
 
-import com.wx.mscrpc.example.api.Hello;
-import com.wx.mscrpc.example.api.HelloService;
+
+import com.wx.mscrpc.api.Hello;
+import com.wx.mscrpc.api.HelloService;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -15,9 +16,8 @@ public class HelloServiceImpl implements HelloService {
 
     @Override
     public String hello(Hello hello) {
-        log.info("HelloServiceImpl收到: {}.", hello.getMessage());
-        String result = "Hello description is " + hello.getDescription();
-        log.info("HelloServiceImpl返回: {}.", result);
-        return result;
+        log.info("HelloServiceImpl收到{}的打招呼。", hello.getName());
+        log.info("打招呼内容为：{}。", hello.getMessage());
+        return "打招呼成功";
     }
 }

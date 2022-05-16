@@ -1,6 +1,7 @@
 package com.wx.mscrpc.example.server;
 
-import com.wx.mscrpc.example.api.HelloService;
+import com.wx.mscrpc.api.HelloService;
+import com.wx.mscrpc.api.UserService;
 import com.wx.mscrpc.transport.netty.server.NettyServer;
 
 /**
@@ -12,7 +13,12 @@ import com.wx.mscrpc.transport.netty.server.NettyServer;
 public class NettyServerMain {
     public static void main(String[] args) {
         HelloServiceImpl helloService = new HelloServiceImpl();
+        UserServiceImpl userService = new UserServiceImpl();
         NettyServer nettyServer = new NettyServer("127.0.0.1",9999);
+
+
         nettyServer.publishService(helloService, HelloService.class);
+        nettyServer.publishService(userService, UserService.class);
+        nettyServer.start();
     }
 }
