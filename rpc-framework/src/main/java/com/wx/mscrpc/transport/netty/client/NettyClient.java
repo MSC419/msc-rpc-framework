@@ -3,8 +3,8 @@ package com.wx.mscrpc.transport.netty.client;
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.serializer.kryo.KryoSerializer;
-import com.wx.mscrpc.transport.netty.codec.NettyKryoDecoder;
-import com.wx.mscrpc.transport.netty.codec.NettyKryoEncoder;
+import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
+import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -46,9 +46,9 @@ public class NettyClient {
                     protected void initChannel(SocketChannel ch) {
                         /*自定义序列化编解码器*/
                         // RpcResponse -> ByteBuf
-                        ch.pipeline().addLast(new NettyKryoDecoder(kryoSerializer, RpcResponse.class));
+                        ch.pipeline().addLast(new NettyDecoder());
                         // ByteBuf -> RpcRequest
-                        ch.pipeline().addLast(new NettyKryoEncoder(kryoSerializer, RpcRequest.class));
+                        ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
                         ch.pipeline().addLast(new NettyClientHandler());
                     }
                 });

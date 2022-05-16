@@ -7,8 +7,8 @@ import com.wx.mscrpc.provider.ServiceProviderImpl;
 import com.wx.mscrpc.registry.ServiceRegistry;
 import com.wx.mscrpc.registry.ZkServiceRegistry;
 import com.wx.mscrpc.serializer.kryo.KryoSerializer;
-import com.wx.mscrpc.transport.netty.codec.NettyKryoDecoder;
-import com.wx.mscrpc.transport.netty.codec.NettyKryoEncoder;
+import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
+import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -85,8 +85,8 @@ public class NettyServer {
                         protected void initChannel(SocketChannel ch) {
                             //给workerGroup的EventLoop对应的管道设置处理器
                             //给pipeline管道设置处理器
-                            ch.pipeline().addLast(new NettyKryoDecoder(kryoSerializer, RpcRequest.class));
-                            ch.pipeline().addLast(new NettyKryoEncoder(kryoSerializer, RpcResponse.class));
+                            ch.pipeline().addLast(new NettyDecoder());
+                            ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
                             ch.pipeline().addLast(new NettyServerHandler());
                         }
                     })

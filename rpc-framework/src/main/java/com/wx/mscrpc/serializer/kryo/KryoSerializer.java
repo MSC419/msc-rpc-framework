@@ -5,6 +5,7 @@ import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
+import com.wx.mscrpc.enumeration.SerializerCode;
 import com.wx.mscrpc.exception.SerializeException;
 import com.wx.mscrpc.serializer.Serializer;
 import lombok.extern.slf4j.Slf4j;
@@ -61,5 +62,10 @@ public class KryoSerializer implements Serializer {
             log.error("occur exception when deserialize:", e);
             throw new SerializeException("反序列化失败");
         }
+    }
+
+    @Override
+    public byte getCode() {
+        return SerializerCode.KRYO.getCode();
     }
 }

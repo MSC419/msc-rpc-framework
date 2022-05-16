@@ -1,5 +1,7 @@
 package com.wx.mscrpc.serializer;
 
+import com.wx.mscrpc.serializer.kryo.KryoSerializer;
+
 /**
  * @Description 序列化接口，所有序列化类都要实现这个接口
  * @Author MSC419
@@ -25,4 +27,19 @@ public interface Serializer {
      * @Date 2022/4/4 17:22
      */
     <T> T deserialize(byte[] bytes, Class<T> clazz);
+
+    static Serializer getByCode(int code) {
+        switch (code) {
+            case 0:
+                return new KryoSerializer();
+//            case 1:
+//                return new JsonSerializer();
+//            case 2:
+//                return new HessianSerializer();
+            default:
+                return null;
+        }
+    }
+
+    byte getCode();
 }
