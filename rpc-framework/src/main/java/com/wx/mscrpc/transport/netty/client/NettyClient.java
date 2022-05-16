@@ -5,6 +5,7 @@ import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.serializer.kryo.KryoSerializer;
 import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
 import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
+import com.wx.mscrpc.transport.netty.codec.Spliter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
@@ -48,8 +49,10 @@ public class NettyClient {
                         // RpcResponse -> ByteBuf
                         ch.pipeline().addLast(new NettyDecoder());
                         // ByteBuf -> RpcRequest
+                        ch.pipeline().addLast(new Spliter());
                         ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
                         ch.pipeline().addLast(new NettyClientHandler());
+
                     }
                 });
     }

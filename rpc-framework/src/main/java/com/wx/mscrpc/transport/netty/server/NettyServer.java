@@ -9,6 +9,7 @@ import com.wx.mscrpc.registry.ZkServiceRegistry;
 import com.wx.mscrpc.serializer.kryo.KryoSerializer;
 import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
 import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
+import com.wx.mscrpc.transport.netty.codec.Spliter;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -86,8 +87,10 @@ public class NettyServer {
                             //给workerGroup的EventLoop对应的管道设置处理器
                             //给pipeline管道设置处理器
                             ch.pipeline().addLast(new NettyDecoder());
+                            ch.pipeline().addLast(new Spliter());
                             ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
                             ch.pipeline().addLast(new NettyServerHandler());
+
                         }
                     })
                     // 设置tcp缓冲区
