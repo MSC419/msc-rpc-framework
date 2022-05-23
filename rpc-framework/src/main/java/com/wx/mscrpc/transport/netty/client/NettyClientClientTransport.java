@@ -1,7 +1,10 @@
 package com.wx.mscrpc.transport.netty.client;
 
+import com.wx.mscrpc.dto.RpcMessage;
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
+import com.wx.mscrpc.enumeration.PackageType;
+import com.wx.mscrpc.enumeration.SerializerCode;
 import com.wx.mscrpc.loadbalancer.LoadBalancer;
 import com.wx.mscrpc.loadbalancer.RandomLoadBalance;
 import com.wx.mscrpc.registry.ServiceRegistry;
@@ -42,11 +45,12 @@ public class NettyClientClientTransport implements ClientTransport {
             InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
             //监听该服务地址
             Channel channel = ChannelProvider.get(inetSocketAddress);
-            //将rpcRequest发送给该服务地址，并得到该地址返回的rpcResponse，将rpcResponse返回
+            //将rpcRequest包装成RpcMessage发送给该服务地址，并得到该地址返回的rpcResponse，将rpcResponse返回
             if (channel.isActive()) {
-                channel.writeAndFlush(rpcRequest).addListener((ChannelFutureListener) future -> {
+                RpcMessage rpcMessage = buildRpcMessage(rpcRequest);
+                channel.writeAndFlush(rpcMessage).addListener((ChannelFutureListener) future -> {
                     if (future.isSuccess()) {
-                        log.info("client send message: {}", rpcRequest);
+                        log.info("client send message: {}", rpcMessage);
                     } else {
                         future.channel().close();
                         log.error("Send failed:", future.cause());
@@ -68,6 +72,21 @@ public class NettyClientClientTransport implements ClientTransport {
         }
 
         return result.get();
+    }
+
+    /**
+     * @Description 根据RpcRequest构建RPC通用信息结构
+     * @Author MSC419
+     * @Date 2022/5/23 10:08
+     */
+    private RpcMessage buildRpcMessage(RpcRequest rpcRequest) {
+
+        return RpcMessage.builder()
+                .messageType(PackageType.REQUEST_PACK.getCode())
+                .serializeType(SerializerCode.KRYO.getCode())
+                //.requestId(rpcRequest.getRequestId())
+                .data(rpcRequest)
+                .build();
     }
 }
 

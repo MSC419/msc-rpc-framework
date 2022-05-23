@@ -1,5 +1,6 @@
 package com.wx.mscrpc.transport.netty.codec;
 
+import com.wx.mscrpc.dto.RpcMessage;
 import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.PackageType;
@@ -31,6 +32,7 @@ public class NettyDecoder extends ByteToMessageDecoder {
                 log.error("不识别的协议包:{}", magic);
                 throw new RpcException(RpcErrorMessageEnum.UNKNOWN_PROTOCOL);
             }
+
             //序列化算法
             byte serializerCode = in.readByte();
             Serializer serializer = Serializer.getByCode(serializerCode);
@@ -40,6 +42,12 @@ public class NettyDecoder extends ByteToMessageDecoder {
             }
             //报文类型
             byte packageCode = in.readByte();
+
+            RpcMessage rpcMessage = RpcMessage.builder()
+                    .messageType(packageCode)
+                    .serializeType(serializerCode)
+                    .build();
+
             Class<?> packageClass;
             if(packageCode == PackageType.REQUEST_PACK.getCode()) {
                 packageClass = RpcRequest.class;
@@ -57,7 +65,8 @@ public class NettyDecoder extends ByteToMessageDecoder {
             in.readBytes(bytes);
             // 反序列化
             Object obj = serializer.deserialize(bytes, packageClass);
-            out.add(obj);
+            rpcMessage.setData(obj);
+            out.add(rpcMessage);
         }catch (Exception e){
             log.error("Netty Decoder error!",e);
         }

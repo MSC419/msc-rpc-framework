@@ -1,8 +1,11 @@
 package com.wx.mscrpc.transport.netty.client;
 
+import com.wx.mscrpc.dto.RpcMessage;
 import com.wx.mscrpc.dto.RpcResponse;
+import com.wx.mscrpc.enumeration.PackageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,25 +18,27 @@ import lombok.extern.slf4j.Slf4j;
  * @Version 2.0
  */
 @Slf4j
-public class NettyClientHandler extends ChannelInboundHandlerAdapter {
+public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> {
     @Override
-    //接收服务端发送过来的消息
-    public void channelRead(ChannelHandlerContext ctx, Object msg) {
+    protected void channelRead0(ChannelHandlerContext ctx, RpcMessage msg) throws Exception {
         try {
-            RpcResponse rpcResponse = (RpcResponse) msg;
-            log.info(String.format("client receive msg: %s", rpcResponse));
-            // 声明一个 AttributeKey 对象，类似于 Map 中的 key
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse"+rpcResponse.getRequestId());
-            // 将服务端的返回结果保存到 AttributeMap 上，AttributeMap 可以看作是一个Channel的共享数据源
-            // AttributeMap的key是AttributeKey，value是Attribute
-            // 用法：ctx.channel().attr(key).set(value);
-            ctx.channel().attr(key).set(rpcResponse);
-            ctx.channel().close();
+            RpcMessage rpcMessage = (RpcMessage) msg;
+            log.info(String.format("client receive msg: %s", rpcMessage));
+            if(rpcMessage.getMessageType() == PackageType.RESPONSE_PACK.getCode()){
+                RpcResponse rpcResponse = (RpcResponse)rpcMessage.getData();
+                // 声明一个 AttributeKey 对象，类似于 Map 中的 key
+                AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse"+rpcResponse.getRequestId());
+                // 将服务端的返回结果保存到 AttributeMap 上，AttributeMap 可以看作是一个Channel的共享数据源
+                // AttributeMap的key是AttributeKey，value是Attribute
+                // 用法：ctx.channel().attr(key).set(value);
+                ctx.channel().attr(key).set(rpcResponse);
+                ctx.channel().close();
+            }
         } finally {
             ReferenceCountUtil.release(msg);
         }
-
     }
+
 
     /*
      * 客户端发生异常的时候被调用

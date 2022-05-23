@@ -31,14 +31,14 @@ import java.net.InetSocketAddress;
 public class NettyServer {
     private final String host;
     private final int port;
-    private final KryoSerializer kryoSerializer;
+//    private final KryoSerializer kryoSerializer;
     private final ServiceRegistry serviceRegistry;
     private final ServiceProvider serviceProvider;
 
     public NettyServer(String host, int port) {
             this.host = host;
             this.port = port;
-            kryoSerializer = new KryoSerializer();
+//            kryoSerializer = new KryoSerializer();
             serviceRegistry = new ZkServiceRegistry();
             serviceProvider = new ServiceProviderImpl();
         }
@@ -86,7 +86,7 @@ public class NettyServer {
                             //给pipeline管道设置处理器
                             ch.pipeline().addLast(new NettyDecoder());
                             ch.pipeline().addLast(new Spliter());
-                            ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
+                            ch.pipeline().addLast(new NettyEncoder(/*kryoSerializer*/));
                             ch.pipeline().addLast(new NettyServerHandler());
 
                         }

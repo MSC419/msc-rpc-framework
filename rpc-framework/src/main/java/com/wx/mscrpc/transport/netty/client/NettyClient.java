@@ -48,7 +48,7 @@ public class NettyClient {
                         ch.pipeline().addLast(new NettyDecoder());
                         // ByteBuf -> RpcRequest
                         ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new NettyEncoder(kryoSerializer));
+                        ch.pipeline().addLast(new NettyEncoder(/*kryoSerializer*/));
                         ch.pipeline().addLast(new NettyClientHandler());
 
                     }

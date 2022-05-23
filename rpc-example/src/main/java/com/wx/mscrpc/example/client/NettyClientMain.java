@@ -25,8 +25,6 @@ public class NettyClientMain {
         String hello = helloService.hello(new Hello("uam","how are you?"));
         System.out.println(hello);
 
-
-
         //调用服务2
         UserService userService = rpcClientProxy.getProxy(UserService.class);
         User userByUserId = userService.getUserByUserId(10);
