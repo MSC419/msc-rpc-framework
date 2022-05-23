@@ -7,6 +7,8 @@ import com.wx.mscrpc.enumeration.PackageType;
 import com.wx.mscrpc.handler.RpcRequestHandler;
 import com.wx.mscrpc.utils.concurrent.ThreadPoolFactory;
 import io.netty.channel.*;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,11 +62,23 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcMessage> 
             }
         });
     }
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        // 处理空闲状态的
+        if (evt instanceof IdleStateEvent) {
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.READER_IDLE) {
+                log.info("idle check happen, so close the connection");
+                ctx.close();
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
+    }
 
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
-        log.error("server catch exception:"+cause);
-        cause.printStackTrace();
+        log.error("server catch exception", cause);
         ctx.close();
     }
 }

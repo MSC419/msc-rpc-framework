@@ -11,8 +11,11 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.timeout.IdleStateHandler;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Description 用于初始化 和 关闭 Bootstrap 对象
@@ -31,7 +34,6 @@ public class NettyClient {
     static {
         eventLoopGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
-        KryoSerializer kryoSerializer = new KryoSerializer();
         bootstrap.group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 //连接的超时时间，超过这个时间还是建立不上的话则代表连接失败
@@ -43,12 +45,15 @@ public class NettyClient {
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
+                        // 设定 IdleStateHandler 心跳检测每 5 秒进行一次写检测
+                        // write()方法超过 5 秒没调用，就调用 userEventTrigger
+                        ch.pipeline().addLast(new IdleStateHandler(0, 5, 0, TimeUnit.SECONDS));
                         /*自定义序列化编解码器*/
                         // RpcResponse -> ByteBuf
                         ch.pipeline().addLast(new NettyDecoder());
                         // ByteBuf -> RpcRequest
                         ch.pipeline().addLast(new Spliter());
-                        ch.pipeline().addLast(new NettyEncoder(/*kryoSerializer*/));
+                        ch.pipeline().addLast(new NettyEncoder());
                         ch.pipeline().addLast(new NettyClientHandler());
 
                     }

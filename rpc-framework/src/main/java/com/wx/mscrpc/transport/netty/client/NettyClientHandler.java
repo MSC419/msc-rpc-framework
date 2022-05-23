@@ -3,12 +3,15 @@ package com.wx.mscrpc.transport.netty.client;
 import com.wx.mscrpc.dto.RpcMessage;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.PackageType;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.SimpleChannelInboundHandler;
+import com.wx.mscrpc.enumeration.SerializerCode;
+import io.netty.channel.*;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import lombok.extern.slf4j.Slf4j;
+
+import java.awt.*;
 
 /**
  * @Description 客户端业务处理Handler，实现对发送到服务端消息的处理逻辑
@@ -36,6 +39,26 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcMessage> 
             }
         } finally {
             ReferenceCountUtil.release(msg);
+        }
+    }
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception{
+        if (evt instanceof IdleStateEvent) {
+            // 根据上面的配置，超过 5 秒没有写请求，会触发 WRITER_IDLE 事件
+            IdleState state = ((IdleStateEvent) evt).state();
+            if (state == IdleState.WRITER_IDLE) {
+                log.info("write idle happen [{}]", ctx.channel().remoteAddress());
+                Channel channel = ctx.channel();
+                // 触发写空闲事件后，就应该发心跳了。
+                // 组装消息
+                RpcMessage rpcMessage = new RpcMessage();
+                rpcMessage.setSerializeType(SerializerCode.KRYO.getCode());
+                rpcMessage.setMessageType(PackageType.HEARTBEAT_PACK.getCode());
+                // 发心跳消息
+                channel.writeAndFlush(rpcMessage).addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
         }
     }
 
