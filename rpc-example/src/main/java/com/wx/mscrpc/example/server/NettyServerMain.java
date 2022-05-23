@@ -1,5 +1,6 @@
 package com.wx.mscrpc.example.server;
 
+import com.wx.mscrpc.annotation.RpcScan;
 import com.wx.mscrpc.api.HelloService;
 import com.wx.mscrpc.api.UserService;
 import com.wx.mscrpc.transport.netty.server.NettyServer;
@@ -10,15 +11,10 @@ import com.wx.mscrpc.transport.netty.server.NettyServer;
  * @Date 2022/4/4 17:05
  * @Version 2.0
  */
+@RpcScan
 public class NettyServerMain {
     public static void main(String[] args) {
-        HelloServiceImpl helloService = new HelloServiceImpl();
-        UserServiceImpl userService = new UserServiceImpl();
         NettyServer nettyServer = new NettyServer("127.0.0.1",9999);
-
-
-        nettyServer.publishService(helloService, HelloService.class);
-        nettyServer.publishService(userService, UserService.class);
         nettyServer.start();
     }
 }

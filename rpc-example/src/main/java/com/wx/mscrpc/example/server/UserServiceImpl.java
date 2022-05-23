@@ -1,5 +1,6 @@
 package com.wx.mscrpc.example.server;
 
+import com.wx.mscrpc.annotation.RpcService;
 import com.wx.mscrpc.api.User;
 import com.wx.mscrpc.api.UserService;
 import lombok.Builder;
@@ -14,6 +15,7 @@ import java.util.Random;
  * @Version 1.0
  */
 @Slf4j
+@RpcService
 public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUserId(Integer id) {

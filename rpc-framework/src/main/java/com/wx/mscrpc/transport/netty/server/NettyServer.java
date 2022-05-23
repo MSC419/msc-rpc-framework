@@ -5,6 +5,8 @@ import com.wx.mscrpc.provider.ServiceProviderImpl;
 import com.wx.mscrpc.registry.ServiceRegistry;
 import com.wx.mscrpc.registry.ZkServiceRegistry;
 import com.wx.mscrpc.serializer.KryoSerializer;
+import com.wx.mscrpc.transport.AbstractRpcServer;
+import com.wx.mscrpc.transport.RpcServer;
 import com.wx.mscrpc.transport.netty.codec.NettyDecoder;
 import com.wx.mscrpc.transport.netty.codec.NettyEncoder;
 import com.wx.mscrpc.transport.netty.codec.Spliter;
@@ -30,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Data
 @Slf4j
-public class NettyServer {
+public class NettyServer extends AbstractRpcServer {
     private final String host;
     private final int port;
     private final ServiceRegistry serviceRegistry;
@@ -41,10 +43,11 @@ public class NettyServer {
             this.port = port;
             serviceRegistry = new ZkServiceRegistry();
             serviceProvider = new ServiceProviderImpl();
+            scanServices();
         }
 
         /**
-         * @Description         注册服务并启动Netty服务端
+         * @Description         注册服务
          * @param service       服务
          * @param serviceClass  服务类型
          * @Return

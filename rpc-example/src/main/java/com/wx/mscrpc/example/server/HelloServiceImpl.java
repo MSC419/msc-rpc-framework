@@ -1,6 +1,7 @@
 package com.wx.mscrpc.example.server;
 
 
+import com.wx.mscrpc.annotation.RpcService;
 import com.wx.mscrpc.api.Hello;
 import com.wx.mscrpc.api.HelloService;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
  * @Version 1.0
  */
 @Slf4j
+@RpcService
 public class HelloServiceImpl implements HelloService {
 
     @Override
