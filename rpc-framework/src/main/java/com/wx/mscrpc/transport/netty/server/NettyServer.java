@@ -1,5 +1,6 @@
 package com.wx.mscrpc.transport.netty.server;
 
+import com.wx.mscrpc.extension.ExtensionLoader;
 import com.wx.mscrpc.provider.ServiceProvider;
 import com.wx.mscrpc.provider.ServiceProviderImpl;
 import com.wx.mscrpc.registry.ServiceRegistry;
@@ -41,7 +42,8 @@ public class NettyServer extends AbstractRpcServer {
     public NettyServer(String host, int port) {
             this.host = host;
             this.port = port;
-            serviceRegistry = new ZkServiceRegistry();
+            serviceRegistry = ExtensionLoader.getExtensionLoader(ServiceRegistry.class).getExtension("zk");
+            log.info("serviceRegistry利用SPI机制生成：{}",serviceRegistry);
             serviceProvider = new ServiceProviderImpl();
             scanServices();
         }

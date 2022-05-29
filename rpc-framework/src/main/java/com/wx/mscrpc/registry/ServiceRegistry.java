@@ -1,5 +1,7 @@
 package com.wx.mscrpc.registry;
 
+import com.wx.mscrpc.extension.SPI;
+
 import java.net.InetSocketAddress;
 
 /**
@@ -8,6 +10,7 @@ import java.net.InetSocketAddress;
  * @Date 2022/4/3 19:04
  * @Version 1.2
  */
+@SPI
 public interface ServiceRegistry {
     /**
      * @Description                 注册服务

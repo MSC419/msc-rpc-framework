@@ -1,5 +1,7 @@
 package com.wx.mscrpc.loadbalancer;
 
+import com.wx.mscrpc.extension.SPI;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * @Date 2022/5/16 20:02
  * @Version 1.0
  */
+@SPI
 public interface LoadBalancer {
     String balance(List<String> addressList);
 }

@@ -1,0 +1,2 @@
+random=com.wx.mscrpc.loadbalancer.RandomLoadBalance
+round=com.wx.mscrpc.loadbalancer.RoundLoadBalance

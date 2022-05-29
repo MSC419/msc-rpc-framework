@@ -13,6 +13,8 @@
         <module>rpc-framework</module>
         <module>rpc-common</module>
         <module>rpc-api</module>
+        <module>rpc-demo-client</module>
+        <module>rpc-demo-server</module>
     </modules>
 
     <properties>

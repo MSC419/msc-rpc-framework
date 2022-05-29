@@ -10,7 +10,9 @@
         <module name="rpc-example" />
         <module name="rpc-common" />
         <module name="rpc-api" />
+        <module name="rpc-demo-client" />
         <module name="rpc-framework" />
+        <module name="rpc-demo-server" />
       </profile>
     </annotationProcessing>
   </component>

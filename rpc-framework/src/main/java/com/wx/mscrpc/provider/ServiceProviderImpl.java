@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentMap;
 @Slf4j
 public class ServiceProviderImpl implements ServiceProvider {
     /**
-     * 接口名和服务的对应关系，TODO 处理一个接口被两个实现类实现的情况
+     * 接口名和服务的对应关系
      * key:service/interface name
      * value:service
      */

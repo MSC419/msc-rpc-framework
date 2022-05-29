@@ -5,6 +5,7 @@ import com.wx.mscrpc.dto.RpcRequest;
 import com.wx.mscrpc.dto.RpcResponse;
 import com.wx.mscrpc.enumeration.PackageType;
 import com.wx.mscrpc.enumeration.SerializerCode;
+import com.wx.mscrpc.extension.ExtensionLoader;
 import com.wx.mscrpc.loadbalancer.LoadBalancer;
 import com.wx.mscrpc.loadbalancer.RandomLoadBalance;
 import com.wx.mscrpc.registry.ServiceRegistry;
@@ -30,7 +31,7 @@ public class NettyClientClientTransport implements ClientTransport {
 
     private ServiceRegistry serviceRegistry;
     public NettyClientClientTransport() {
-        this.serviceRegistry = new ZkServiceRegistry(new RandomLoadBalance());
+        this.serviceRegistry = ExtensionLoader.getExtensionLoader(ServiceRegistry.class).getExtension("zk");
     }
 
     public NettyClientClientTransport(LoadBalancer loadBalancer) {
