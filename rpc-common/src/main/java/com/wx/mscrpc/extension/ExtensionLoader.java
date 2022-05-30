@@ -15,9 +15,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-/**
- * refer to dubbo spi: https://dubbo.apache.org/zh-cn/docs/source_code_guide/dubbo-spi.html
- */
 @Slf4j
 public final class ExtensionLoader<T> {
     /**
@@ -25,20 +22,20 @@ public final class ExtensionLoader<T> {
      */
     private static final String SERVICE_DIRECTORY = "META-INF/extensions/";
     /**
-     * 扩展加载器实例缓存 {类型：加载器实例}
+     * 扩展加载器缓存 {类型：加载器}
      */
     private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<>();
     /**
-     *
+     * 扩展类实例缓存 {类型：实例}
      */
     private static final Map<Class<?>, Object> EXTENSION_INSTANCES = new ConcurrentHashMap<>();
 
     /**
-     * 扩展类加载器的类型
+     * 扩展类的类型
      */
     private final Class<?> type;
     /**
-     * 创建扩展实例类的锁缓存 {name: synchronized 持有的锁}
+     * 扩展实例类的Holder缓存 {name: 持有该实例的Holder}
      */
     private final Map<String, Holder<Object>> cachedInstances = new ConcurrentHashMap<>();
     /**
@@ -46,23 +43,34 @@ public final class ExtensionLoader<T> {
      */
     private final Holder<Map<String, Class<?>>> cachedClasses = new Holder<>();
 
-    //构造函数
+    /**
+     * 构造函数
+     */
     private ExtensionLoader(Class<?> type) {
         this.type = type;
     }
 
+    /**
+     * @Description 根据类型得到扩展类加载器
+     * @param type  扩展类类型
+     * @Return      扩展类加载器
+     */
     public static <S> ExtensionLoader<S> getExtensionLoader(Class<S> type) {
+        //扩展类不能为空
         if (type == null) {
             throw new IllegalArgumentException("Extension type should not be null.");
         }
+        //扩展类必须是接口
         if (!type.isInterface()) {
             throw new IllegalArgumentException("Extension type must be an interface.");
         }
+        //扩展类必须有@SPI
         if (type.getAnnotation(SPI.class) == null) {
             throw new IllegalArgumentException("Extension type must be annotated by @SPI");
         }
-        // firstly get from cache, if not hit, create one
+        // 先从EXTENSION_LOADERS缓存里取
         ExtensionLoader<S> extensionLoader = (ExtensionLoader<S>) EXTENSION_LOADERS.get(type);
+        // 如果缓存里没有，就新建一个，并放在缓存里
         if (extensionLoader == null) {
             EXTENSION_LOADERS.putIfAbsent(type, new ExtensionLoader<S>(type));
             extensionLoader = (ExtensionLoader<S>) EXTENSION_LOADERS.get(type);
@@ -71,16 +79,17 @@ public final class ExtensionLoader<T> {
     }
 
     /**
-     * @Description 根据名字获取扩展类实例
+     * @Description 根据名字获取扩展类实例对象
      * @param name  扩展类在配置文件中配置的名字
-     * @Return      扩展类实例
+     * @Return      扩展类实例对象
      */
     public T getExtension(String name) {
         if (name == null || name.isEmpty()) {
             throw new IllegalArgumentException("Extension name should not be null or empty.");
         }
-        // firstly get from cache, if not hit, create one
+        // 先从缓存cachedInstances里找
         Holder<Object> holder = cachedInstances.get(name);
+        // 如果没有，新建一个空Holder放进cachedInstances
         if (holder == null) {
             cachedInstances.putIfAbsent(name, new Holder<>());
             holder = cachedInstances.get(name);
@@ -90,7 +99,7 @@ public final class ExtensionLoader<T> {
         if (instance == null) {
             synchronized (holder) {
                 instance = holder.get();
-                if (instance == null) {
+                if (instance == null) {//双重保险
                     instance = createExtension(name);
                     holder.set(instance);
                 }
@@ -100,20 +109,22 @@ public final class ExtensionLoader<T> {
     }
 
     /**
-     * 创建对应名字的扩展类实例
+     * 创建对应名字的扩展类实例对象
      *
      * @param name 扩展名
-     * @return 扩展类实例
+     * @return 扩展类实例对象
      */
     private T createExtension(String name) {
-        // load all extension classes of type T from file and get specific one by name
+        //  从配置文件中加载所有的扩展类，可得到“配置项名称”到“配置类”的映射关系表
         Class<?> clazz = getExtensionClasses().get(name);
         if (clazz == null) {
             throw new RuntimeException("No such extension of name " + name);
         }
+        //先从EXTENSION_INSTANCES取实例
         T instance = (T) EXTENSION_INSTANCES.get(clazz);
         if (instance == null) {
             try {
+                //没有，就通过反射创建实例并存入EXTENSION_INSTANCES
                 EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             } catch (Exception e) {
